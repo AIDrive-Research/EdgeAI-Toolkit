@@ -519,6 +519,6 @@ class Postprocessor(BasePostprocessor):
 
 ![](../../../docs/assets/encryption_1.png)
 
-![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\encryption_2.png)
+![](../../../docs/assets/encryption_2.png)
 
 - 加密完成的bin文件为最终文件，从盒子后台管理系统【算法仓库】中导入即可。
