@@ -68,7 +68,7 @@
 
 |                             类型                             |                             介绍                             |                   样例下载                   |                        开发方法                        |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------: | :----------------------------------------------------: |
-|  目标检测类<br>![obj_class.png](docs/assets/obj_class.png)   | 单模型目标检测算法。如区域入侵、离岗检测、车型检测等。业务逻辑简单，使用最广泛。 |   [下载](engine/examples/object_detection)   |   [文档](engine/examples/object_detection/README.md)   |
+| 目标检测类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。如区域入侵、离岗检测、车型检测等。业务逻辑简单，使用最广泛。 |   [下载](engine/examples/object_detection)   |   [文档](engine/examples/object_detection/README.md)   |
 | 模型串联类<br>![cascade_class.png](docs/assets/cascade_class.png) | 模型A的输出作为模型B的输入，算法基于模型B的输出决策。如未佩戴安全帽检测、抽烟检测、使用手机检测等。 |   [下载](engine/examples/model_cascading)    |   [文档](engine/examples/model_cascading/README.md)    |
 | 模型并联类<br>![para_class.png](docs/assets/para_class.png)  | 算法基于模型A/B的并行化输出决策。如未穿戴反光衣检测、挂钩高挂低用检测等。 |  [下载](engine/examples/model_parallelism)   |  [文档](engine/examples/model_parallelism/README.md)   |
 | 目标跟踪类<br>![track_class.png](docs/assets/track_class.png) | 算法基于同一目标在多帧下的坐标或时间数据决策。如徘徊检测、睡岗检测等。 |   [下载](engine/examples/object_tracking)    |   [文档](engine/examples/object_tracking/README.md)    |
