@@ -326,3 +326,42 @@ class Postprocessor(BasePostprocessor):
 ###### 函数输出
 
 `True` or `False`
+
+#### 算法包配置文件修改
+
+- 算法名称修改为自己定义的算法名称，如：custom_person_intrusion，若不修改，会覆盖已有算法文件
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\algname.png)
+
+- 模型名称修改为自定义的算法名称，如：custom_person，若不修改，会覆盖已有模型。将量化好的模型放置下图第一个文件夹下
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\modelname.png)
+
+- 推理代码文件名称修改：在`区域入侵`算法中，推理代码文件为`detect.py`，将此文件名称修改为`custom_detect.py`。
+
+- `model.yaml`文件修改：`model.yaml`中的①为模型名称，即模型文件夹名称；②为检测类型，与推理代码文件名称一致。
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\obj_8.png)
+
+- `postprocessor.yaml`文件修改：①处为算法名称，②处为算法中文名，③为算法分组名称，④为模型名称，⑤为label映射，⑥为告警label，矩形框上的告警label，可自行自定义，若不写，使用label_map中的value
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\obj_9.png)
+
+- 前端配置文件xxx.json修改：详细可参照[前端配置文件](../../JSON.md)。修改`model_args`中的模型文件名。
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\obj_10.png)
+
+#### 算法包加密
+
+- 将算法包加密为bin文件。下载算法包[加密工具](https://pan.baidu.com/s/173r6sLMh77n3JrKkLnSpYg?pwd=0000)。将待加密算法包放在文件夹内（文件夹只含单个算法包），填写待加密算法包的上级路径（如下述文件夹所示），点击【确定】按钮，提示即将加密的算法包名称，点击【ok】；
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\encryption_1.png)
+
+![](F:\gitcode\EdgeAI-Toolkit2\docs\assets\encryption_2.png)
+
+- 加密完成的bin文件为最终文件，从盒子后台管理系统【算法仓库】中导入即可。
+
+
+
+
+
