@@ -75,7 +75,9 @@
 | 目标计数类<br>![count_class.png](docs/assets/count_class.png) | 算法基于跟踪数据与预设直线数据决策。如人员计数、车辆计数等。 |   [下载](engine/examples/object_counting)    |   [文档](engine/examples/object_counting/README.md)    |
 | 底库比对类<br>![compare_class.png](docs/assets/compare_class.png) | 算法基于在线图像或目标特征与底库特征数据比对决策。如人脸识别、未穿工服检测、消防通道占用检测等。 | [下载](engine/examples/base_lib_comparision) | [文档](engine/examples/base_lib_comparision/README.md) |
 
+## FAQ
 
+提供自定义算法包开发与调试过程中的常见问题，如开发中存疑，可从[FAQ](./docs/FAQ.md)文档中查找答案。
 
 ## 授权
 
