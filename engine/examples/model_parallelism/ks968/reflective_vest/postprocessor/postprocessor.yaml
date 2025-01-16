@@ -1,0 +1,18 @@
+name: reflective_vest
+ch_name: 未穿戴反光衣检测
+desc: 适用于工地场景下未穿戴反光衣检测;支持橙色、荧光黄反光衣检测;画面需可分辨人员及反光衣特征;反光衣目标不小于画面大小5%;识别距离小于20m最佳（200万@6mm）
+group_name: 人员管理
+model:
+  zql_reflective_vest:
+    label:
+      class2label:
+        0: reflective_vest
+  zql_person:
+    label:
+      class2label:
+        0: person
+      label_map:
+        person: 人
+alert_label: [ ]
+process_time: 10
+version: ks968-v7.0

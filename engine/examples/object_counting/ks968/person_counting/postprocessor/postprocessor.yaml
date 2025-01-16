@@ -1,0 +1,14 @@
+name: person_counting
+ch_name: 人员计数
+desc: 适用于园区、商场场景下人员计数与流量统计;需标记虚拟直线，并确定人员跨线的方向;可标记多条虚拟直线;画面清晰，可辨别人员特征;人员目标不小于画面大小5%;识别距离小于20m最佳（200万@6mm）;建议检测频率：不低于2次/秒
+group_name: 人员管理
+model:
+  zql_person:
+    label:
+      class2label:
+        0: person
+      label_map:
+        person: 人
+alert_label: [ ]
+process_time: 20
+version: ks968-v6.0

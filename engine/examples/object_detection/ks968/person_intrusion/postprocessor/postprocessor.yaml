@@ -1,0 +1,16 @@
+name: person_intrusion
+ch_name: 区域入侵
+desc: 适用于违禁、危险区域人员入侵检测;入侵区域为多边形，可标记多个多边形区域;画面清晰，可辨别人员特征;人员目标不小于画面大小5%;识别距离小于20m最佳（200万@6mm）;人体脚部中心点进入入侵区域告警（默认）（判断点可选人体中心点或人体双脚中心点）
+group_name: 人员管理
+model:
+  zql_person:
+    label:
+      class2label:
+        0: person
+      label_map:
+        person: 人
+      label2color:
+        人: [ 0, 255, 0 ]
+alert_label: [ ]
+process_time: 10
+version: ks968-v6.0

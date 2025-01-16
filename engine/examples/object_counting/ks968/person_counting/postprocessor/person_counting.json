@@ -1,0 +1,94 @@
+{
+    "basicParams": {
+        "alert_window": {
+            "type": "interval_threshold_window",
+	    "interval": 0,
+            "length": 1,
+            "threshold": 1
+        },
+        "bbox": {
+            "polygons": [],
+            "lines": []
+        },
+        "plan": {
+            "1": [[0, 86399]],
+            "2": [[0, 86399]],
+            "3": [[0, 86399]],
+            "4": [[0, 86399]],
+            "5": [[0, 86399]],
+            "6": [[0, 86399]],
+            "7": [[0, 86399]]
+        },
+        "hazard_level": "",
+        "alg_type": "cross_line_counting",
+        "model_args": {
+            "zql_person": {
+                "conf_thres": 0.4
+            }
+        },
+        "reserved_args": {
+            "ch_name": "人员计数",
+            "sound_text": "人员计数告警",
+            "strategy": "center"
+        }
+    },
+    "renderParams": {
+        "alert_window": {},
+        "reserved_args": {
+            "strategy": {
+                "hide": true,
+                "label": "检测策略",
+                "tooltip": "检测框判断点选择。如选择底部，表示利用检测框底部中点与区域（如入侵区域或离岗区域）关系判断告警事件。",
+                "type": "select",
+                "options": [{
+                        "label": "顶部",
+                        "value": "top"
+                    }, {
+                        "label": "中心",
+                        "value": "center"
+                    }, {
+                        "label": "底部",
+                        "value": "bottom"
+                    }, {
+                        "label": "左侧",
+                        "value": "left"
+                    }, {
+                        "label": "右侧",
+                        "value": "right"
+                    }
+                ]
+            },
+            "sound_text": {
+                "label": "浏览器语音播报",
+                "type": "text",
+                "maxLength": 20
+            }
+        },
+        "bbox": {
+            "polygons": {
+                "exits": "optional",
+                "max": -1,
+                "edge": -1
+            },
+            "lines": {
+                "exits": "must",
+                "max": -1,
+                "cross": true
+            }
+        },
+        "model_args": {
+            "zql_person": {
+                "conf_thres": {
+                    "label": "人体检测置信度",
+                    "unit": "",
+                    "type": "number",
+                    "range": {
+                        "min": 0,
+                        "step": 0.01,
+                        "max": 1
+                    }
+                }
+            }
+        }
+    }
+}

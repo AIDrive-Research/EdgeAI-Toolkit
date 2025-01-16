@@ -1,6 +1,6 @@
 **环境安装**
 
-1. Clone repo and install [requirements.txt](requirements.txt) in a python>=3.8.0 environment, including pytorch>=1.8
+1. Clone repo and install [requirements.txt](requirements.txt) in a python=3.8.0 environment, including pytorch=1.8
 
 2. ```
    git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git

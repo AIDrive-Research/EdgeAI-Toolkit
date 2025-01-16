@@ -1,0 +1,14 @@
+name: person_loitering
+ch_name: 徘徊检测
+desc: 适用于工厂、园区、银行场景下人员徘徊检测;可设定多边形检测区域;画面清晰，可辨别人员特征;人员目标不小于画面大小5%;识别距离小于20m最佳（200万@6mm）;敏感度值越大，检测越灵敏;建议检测频率：不低于2次/秒
+group_name: 人员管理
+model:
+  zql_person:
+    label:
+      class2label:
+        0: person
+      label_map:
+        person: 人
+alert_label: [ 徘徊 ]
+process_time: 20
+version: ks968-v7.0

@@ -33,8 +33,8 @@
 
 #### 标注工具
 
-- 目标检测标注工具：[链接](https://pan.baidu.com/s/1YbknybWtuLhRRdh0GPmmTA?pwd=0000)
-- 姿态&分割标注工具：[链接](https://pan.baidu.com/s/16FRrII73DMOsyjsHLPIVFQ?pwd=0000)
+- 目标检测标注工具：[链接](https://pan.baidu.com/s/1PvFf5yUyW1jwhyiDWbFDEg?pwd=0000)
+- 姿态&分割标注工具：[链接](https://pan.baidu.com/s/1PXnlpoZxmtK1cThaFEj1vg?pwd=0000)
 
 #### 标注样例
 

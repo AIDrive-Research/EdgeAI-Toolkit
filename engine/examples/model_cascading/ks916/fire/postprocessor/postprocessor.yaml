@@ -1,0 +1,22 @@
+name: fire
+ch_name: 明火检测
+desc: 适用于园区、仓库、商场场景下明火检测;支持红色火焰识别;画面清晰，可辨别火焰特征;火焰目标不小于画面大小10%;识别距离小于15m最佳（200万@6mm）;汽车灯光等类火焰目标可能产生误报
+group_name: 险情防控
+model:
+  zql_fire:
+    label:
+      class2label:
+        0: fire
+      label_map:
+        fire: 火焰
+      label2color:
+        火焰: [ 0, 0, 255 ]
+  zql_fire_classify:
+    inactive: true
+    label:
+      class2label:
+        0: fire 
+        1: normal
+alert_label: [ ]
+process_time: 20
+version: ks916-v7.0

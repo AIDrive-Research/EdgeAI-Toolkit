@@ -1,0 +1,14 @@
+zql_reflective_vest:
+  type: zql_detect
+  args:
+    conf_thres: 0.25
+    img_size: 640
+    nms_thres: 0.45
+  infer_time: 220
+zql_person:
+  type: zql_detect
+  args:
+    conf_thres: 0.25
+    img_size: 640
+    nms_thres: 0.45
+  infer_time: 220

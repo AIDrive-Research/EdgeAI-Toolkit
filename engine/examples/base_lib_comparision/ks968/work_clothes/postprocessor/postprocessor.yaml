@@ -1,0 +1,19 @@
+name: work_clothes
+ch_name: 未穿工服检测
+desc: 适用于工地、工厂未穿工服检测;需配置工服底库并载入底库;底库需具备不同距离、姿态、光线多样性;画面可分辨人员及工服特征;人员及工服目标不小于画面大小5%;识别距离小于20m最佳（200万@6mm）
+group_name: 人员管理
+model:
+  zql_work_clothes:
+    inactive: true
+    label:
+      class2label:
+        0: work_clothes
+      label2map:
+        work_clothes: 未穿工服
+  zql_person:
+    label:
+      class2label:
+        0: person
+alert_label: [ ]
+process_time: 10
+version: ks968-v8.0
