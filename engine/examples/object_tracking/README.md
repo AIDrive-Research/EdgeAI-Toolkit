@@ -393,7 +393,7 @@ class Postprocessor(BasePostprocessor):
 
 - 前端配置文件xxx.json修改。详细可参照[前端配置文件](../../JSON.md)。修改模型名称、算法名称、语音播报内容、置信度label等。
 
-![](E:\gitcode\EdgeAI-Toolkit2_bak\docs\assets\alg_json_loitering.png)
+![](../../../docs/assets/alg_json_loitering.png)
 
 **2、算法包加密**
 
@@ -409,7 +409,7 @@ class Postprocessor(BasePostprocessor):
 
 以上的推理与后处理实例继承分别继承于model与postprocessor基类，对于基类的具体解释如下。
 
-推理与后处理代码位于[general](../general)文件夹下。下图为模块调用流程图。
+推理与后处理代码位于[general](../../general)文件夹下。下图为模块调用流程图。
 
 - **推理模块**：从解码队列中取出图像数据，进行模型推理，并将推理结果写入推理队列。
 - **后处理模块**：从推理队列中取出结构化数据进行业务逻辑处理产生告警，并将告警结果写入告警队列。
