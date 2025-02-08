@@ -225,15 +225,4 @@ class Model(RknnModel):
 
 ## 4. 模型量化
 
-参照模型量化[README.md](#../../../quantization/rockchip/README.md)，将onnx模型转换为RKNN模型。
-
-
-
-
-
-
-
-
-
-
-
+参照模型量化[README.md](../../../quantization/rockchip/README.md)，将onnx模型转换为RKNN模型。
