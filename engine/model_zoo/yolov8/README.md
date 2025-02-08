@@ -1,6 +1,6 @@
 ## 1. 代码解析
 
-以下为yolo11推理代码，核心代码包括`infer`函数与`process`函数两部分。
+以下为yolov8推理代码，核心代码包括`infer`函数与`process`函数两部分。
 
 ```python
 class Model(RknnModel):
@@ -195,24 +195,20 @@ class Model(RknnModel):
 
 ## 2. 训练代码
 
-训练源码参考以下代码仓库:  https://github.com/airockchip/ultralytics_yolo11
+训练源码参考以下代码仓库:  https://github.com/airockchip/ultralytics_yolov8
 
 ## 3. 预训练模型
 
 **下载链接：**
 
-[./yolo11n.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolo11/yolo11n.onnx)<br />[./yolo11s.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolo11/yolo11s.onnx)<br />[./yolo11m.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolo11/yolo11m.onnx)
-
-**onnx导出方法：**
-
-**注：** 导出yolo11 onnx模型，请参考：[RKOPT_README.zh-CN.md](https://github.com/airockchip/ultralytics_yolo11/blob/main/RKOPT_README.zh-CN.md) / [RKOPT_README.md](https://github.com/airockchip/ultralytics_yolo11/blob/main/RKOPT_README.md)
+[./yolov8n.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolov8/yolov8n.onnx)<br />[./yolov8s.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolov8/yolov8s.onnx)<br />[./yolov8m.onnx](https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolov8/yolov8m.onnx)
 
 **注：** 这里提供的模型是优化后的模型，与官方的原始模型有所不同。以yolo11n.onnx为例说明两者的差异。
 
 1、两者的输出如下图所示。左边是官方原始模型，右边是优化后的模型。优化后的模型分为三部分。例如，在 ([1,64,80,80],[1,80,80,80],[1,1,80,80])的输出中，[1,64,80,80]是预测框坐标，[1,80,80,80] 是预测框中80个类别的置信度。[1,1,80,80]是80个类别置信度的总和。
 
 <div align=center>
-  <img src="./assets/yolo11_output_comparison.jpg" alt="Image">
+  <img src="./assets/yolov8_output_comparison.jpg" alt="Image">
 </div>
 
 
@@ -220,8 +216,9 @@ class Model(RknnModel):
 2、以 ([1,64,80,80],[1,80,80,80],[1,1,80,80])为例进行说明，移除了两个卷积节点后的子图，保留了([1,64,80,80],[1,80,80,80])两个卷积输出。并增加ReduceSum+Clip来计算80个类别的置信度([1,1,80,80])，引入这个分支的作用是用于后处理阶段加速阈值筛选。
 
 <div align=center>
-  <img src="./assets/yolo11_graph_comparison.jpg" alt="Image">
+  <img src="./assets/yolov8_graph_comparison.jpg" alt="Image">
 </div>
+
 
 ## 4. 模型量化
 
