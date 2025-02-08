@@ -552,7 +552,7 @@ class Postprocessor(BasePostprocessor):
 
 - 加密完成的bin文件为最终文件，从盒子后台管理系统【算法仓库】中导入即可。
 
-#### 附录：
+### 附录：
 
 以上的推理与后处理实例继承分别继承于model与postprocessor基类，对于基类的具体解释如下。
 
