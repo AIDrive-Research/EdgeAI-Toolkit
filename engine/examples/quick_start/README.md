@@ -56,7 +56,7 @@
 
 ![](../../../docs/assets/postprocessor_yaml_car.png)
 
-- 前端配置文件xxx.json修改。详细可参照[前端配置文件](../../JSON.md)。修改模型名称、算法名称、语音播报内容、置信度label等。
+- **前端配置文件xxx.json修改**。详细可参照[前端配置文件](../../JSON.md)。修改模型名称、算法名称、语音播报内容、置信度label等。
 
 ![](../../../docs/assets/alg_json_car.png)
 
