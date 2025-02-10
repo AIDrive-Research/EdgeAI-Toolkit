@@ -12,11 +12,11 @@
 
 ### 2. 模型训练
 
-模型训练参照yolov5训练[README.md](../../../train/detection/yolov5/README.md)，训练完成后导出onnx模型。
+模型训练参照yolov5训练[文档](../../../train/detection/yolov5/)，训练完成后导出onnx模型。
 
 ### 3. 模型量化
 
-模型量化参照[README.md](../../../quantization/rockchip/README.md)，量化完成后得到rknn模型。
+模型量化参照[文档](../../../quantization/rockchip/)，量化完成后得到rknn模型。
 
 ### 4. 配置文件修改
 
