@@ -33,10 +33,11 @@
 
 ### 开发样例
 
-教程提供了六种算法包样例，用户可根据需求，参照相应样例，开发专有算法包。
+教程提供了七种算法包样例，用户可根据需求，参照相应样例，开发专有算法包。
 
-|                             类型                             |                             介绍                             |                   样例下载                   |
+|                             类型                             |                             介绍                             |                     样例                     |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------: |
+| 快速入门类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。无需编写代码，替换为自有模型，修改配置即可使用。 |     [样例](engine/examples/quick_start)      |
 | 目标检测类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。如区域入侵、离岗检测、车型检测等。业务逻辑简单，使用最广泛。 |   [下载](engine/examples/object_detection)   |
 | 模型串联类<br>![cascade_class.png](docs/assets/cascade_class.png) | 模型A的输出作为模型B的输入，算法基于模型B的输出决策。如未佩戴安全帽检测、抽烟检测、使用手机检测等。 |   [下载](engine/examples/model_cascading)    |
 | 模型并联类<br>![para_class.png](docs/assets/para_class.png)  | 算法基于模型A/B的并行化输出决策。如未穿戴反光衣检测、挂钩高挂低用检测等。 |  [下载](engine/examples/model_parallelism)   |

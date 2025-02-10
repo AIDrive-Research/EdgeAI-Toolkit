@@ -1,0 +1,18 @@
+name: car_type
+ch_name: 车型识别
+desc: 适用于停车场所、交通场景下车辆类型识别;支持小轿车、货车、公交车检测;画面清晰，可辨别车型特征;车辆目标不小于画面大小5%;识别距离小于30m最佳（200万@6mm）
+group_name: 车辆管理
+model:
+  zql_common:
+    label:
+      class2label:
+        2: car
+        7: truck
+        5: bus
+      label_map:
+        car: 小轿车
+        truck: 货车
+        bus: 公交车
+alert_label: [ 小轿车, 公交车, 货车 ]
+process_time: 10
+version: ks968-v6.0

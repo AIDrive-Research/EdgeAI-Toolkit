@@ -1,0 +1,99 @@
+{
+    "basicParams": {
+        "alert_window": {
+            "type": "interval_threshold_window",
+            "interval": 5,
+            "length": 3,
+            "threshold": 2
+        },
+        "bbox": {
+            "polygons": [],
+            "lines": []
+        },
+        "plan": {
+            "1": [[0, 86399]],
+            "2": [[0, 86399]],
+            "3": [[0, 86399]],
+            "4": [[0, 86399]],
+            "5": [[0, 86399]],
+            "6": [[0, 86399]],
+            "7": [[0, 86399]]
+        },
+        "hazard_level": "",
+        "alg_type": "general",
+        "model_args": {
+            "zql_common": {
+                "conf_thres": 0.5
+            }
+        },
+        "reserved_args": {
+            "ch_name": "车型识别",
+            "sound_text": "车型识别告警"
+        }
+    },
+    "renderParams": {
+        "alert_window": {
+            "interval": {
+                "label": "告警间隔",
+                "unit": "秒",
+                "tooltip": "例：设置为5秒，则5秒内连续检测到多次只告警1次",
+                "type": "number",
+                "range": {
+                    "min": 0,
+                    "step": 1,
+                    "max": 99999999
+                }
+            },
+            "length": {
+                "label": "告警窗口长度",
+                "unit": "次",
+                "tooltip": "告警事件的判断周期，如设置5，则利用最近的5次检测结果判断是否为告警。",
+                "type": "number",
+                "range": {
+                    "min": 0,
+                    "step": 1,
+                    "max": 100
+                }
+            },
+            "threshold": {
+                "label": "告警阈值",
+                "unit": "次",
+                "tooltip": "告警命中阈值，配合告警窗口使用。如告警窗口长度设置为5，告警阈值设置为3，则5次检测结果中，有3次告警命中，为1次告警事件。",
+                "type": "number",
+                "range": {
+                    "min": 0,
+                    "step": 1,
+                    "max": 100
+                }
+            }
+        },
+        "reserved_args": {
+            "sound_text": {
+                "label": "浏览器语音播报",
+                "type": "text",
+                "maxLength": 20
+            }
+        },
+        "bbox": {
+            "polygons": {
+                "exits": "optional",
+                "max": -1,
+                "edge": -1
+            }
+        },
+        "model_args": {
+            "zql_common": {
+                "conf_thres": {
+                    "label": "车辆检测置信度",
+                    "unit": "",
+                    "type": "number",
+                    "range": {
+                        "min": 0,
+                        "step": 0.01,
+                        "max": 1
+                    }
+                }
+            }
+        }
+    }
+}
