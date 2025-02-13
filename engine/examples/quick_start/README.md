@@ -1,12 +1,17 @@
 ### 1. 下载示例算法包
 
-下载示例算法包，并在示例算法包上修改。如果产品为ks968，则下载ks968文件夹下的car_type算法包文件夹。如果型号为ks916，则下载ks916文件夹下的car_type算法包。产品型号在【系统设置】-【设备升级】中可查看。
+```
+git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git
+```
 
-示例算法包
+下载示例算法包，并在示例算法包上修改。
+
+- 如果产品型号为ks968，则在ks968下的car_type算法包上修改。
+- 如果产品型号为ks916，则在ks916下的car_type算法包上修改。
 
 ![quick_start_1.png](../../../docs/assets/quick_start_1.png)
 
-产品型号查看
+产品型号查看，产品型号在【系统设置】-【设备升级】中可查看。
 
 ![quick_start_2.png](../../../docs/assets/quick_start_2.png)
 

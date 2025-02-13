@@ -70,6 +70,8 @@
 
 **训练**
 
+下载预训练权重：[./yolov5s.pt](https://pan.baidu.com/s/1eGCl5q809TVYe8vh7heh3A?pwd=0000)
+
 1. 单卡训练
 
    ```
@@ -95,3 +97,5 @@
       ```
       python export_rk.py --weights xxx.pt --include onnx --simplify --opset 12 --rknpu rk3588
       ```
+
+- ks968产品，rknpu为rk3588；ks916产品rknpu为rk3568
