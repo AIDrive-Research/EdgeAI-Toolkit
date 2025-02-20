@@ -392,7 +392,39 @@ class Postprocessor(BasePostprocessor):
 
 ![](../../../docs/assets/quick_start_3.png)
 
-### 8. 附录
+### 8. 代码调试
+
+- 在下图所示红色框内，连续点击7次，打开开发者模式（版本≥3.1.6具备此功能）
+
+![faq_2](../../../docs/assets/faq_2.png)
+
+- 在高级设置，终端管理中，可进入盒子后台调试&查看日志（请勿删除系统源码，谨慎操作，否则造成设备不可用）
+
+![faq_3](../../../docs/assets/faq_3.png)
+
+- 调试代码。导入`logger`包，使用`LOGGER.info`输出日志。示例如下。
+
+```python
+from logger import LOGGER
+
+LOGGER.info('boxes:{},classes:{},scores:{}'.format(boxes, classes, scores))
+```
+
+-  查看日志
+
+查看推理模块日志
+
+```bash
+tail -f ks/ks968/data/logs/engine/0/engine.log
+```
+
+查看后处理模块日志
+
+```bash
+tail -f ks/ks968/data/logs/filter/filter.log
+```
+
+### 9. 附录
 
 以上的推理与后处理实例继承分别继承于model与postprocessor基类，对于基类的具体解释如下。
 
