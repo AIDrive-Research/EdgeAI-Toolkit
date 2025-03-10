@@ -1,9 +1,9 @@
 ## 环境安装
-1. Clone repo and install [requirements.txt](https://github.com/AIDrive-Research/EdgeAI-Engine/blob/main/train/ocr/requirements.txt) in a python=3.8.0 environment, including pytorch>=1.8.推荐使用Conda虚拟环境
+1. Clone repo and install [requirements.txt](https://github.com/AIDrive-Research/EdgeAI-Toolkit/blob/main/train/ocr/paddleocr/requirements.txt) in a python=3.8.0 environment, including pytorch>=1.8 推荐使用Conda虚拟环境。
 
 2. ```bash
     git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git
-    cd EdgeAI-Toolkit/train/ocr
+    cd EdgeAI-Toolkit/train/ocr/paddleocr
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
    ```
 
