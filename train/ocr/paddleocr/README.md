@@ -1,14 +1,14 @@
 ## 环境安装
-1. Clone repo and install [requirements.txt](https://github.com/AIDrive-Research/EdgeAI-Engine/blob/main/train/ocr/requirements.txt) in a [**Python>=3.8.0**](https://www.python.org/) environment, including [**PyTorch>=1.8**](https://pytorch.org/get-started/locally/).推荐使用Conda虚拟环境
+1. Clone repo and install [requirements.txt](https://github.com/AIDrive-Research/EdgeAI-Engine/blob/main/train/ocr/requirements.txt) in a python=3.8.0 environment, including pytorch>=1.8.推荐使用Conda虚拟环境
 
 2. ```bash
-    git clone https://github.com/AIDrive-Research/EdgeAI-Engine.git
-    cd EdgeAI-Engine/train/ocr
+    git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git
+    cd EdgeAI-Toolkit/train/ocr
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
    ```
 
 ## 数据准备
-1. 参考[EdgeAI-Pipeline](https://github.com/AIDrive-Research/EdgeAI-Pipeline)标注数据集，结构如下：
+1. 标注数据集，结构如下：
    ```bash
    |-train_data
       |-crop_img
@@ -62,7 +62,7 @@
    ```
 
 ## 模型选择
-建议选择PP-OCRv4模型（配置文件：[ch_PP-OCRv4_det_student.yml](https://github.com/AIDrive-Research/EdgeAI-Engine/blob/main/train/ocr/configs/det/ch_PP-OCRv4/ch_PP-OCRv4_det_cml.yml)，预训练模型：[ch_PP-OCRv4_det_train.tar](https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_train.tar)）进行微调，其精度与泛化性能是目前提供的最优预训练模型。
+建议选择PP-OCRv4模型（配置文件：[ch_PP-OCRv4_det_student.yml](https://github.com/AIDrive-Research/EdgeAI-Toolkit/tree/main/train/ocr/paddleocr/configs/det/ch_PP-OCRv4/ch_PP-OCRv4_det_cml.yml)，预训练模型：[ch_PP-OCRv4_det_train.tar](https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_train.tar)）进行微调，其精度与泛化性能是目前提供的最优预训练模型。
 注意：在使用上述预训练模型的时候，需要使用文件夹中的student.pdparams文件作为预训练模型，即，仅使用学生模型。
 
 ## 训练超参选择
@@ -149,5 +149,4 @@ Train:
    # 例如: python convert.py ../model/ppocrv4_det.onnx rk3588
    # 输出文件保存为: ../model/ppocrv4_det.rknn
    ```
-
 
