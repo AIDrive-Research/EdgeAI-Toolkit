@@ -51,6 +51,7 @@
 
 - 目标检测标注工具：[链接](https://pan.baidu.com/s/1PvFf5yUyW1jwhyiDWbFDEg?pwd=0000)
 - 姿态&分割标注工具：[链接](https://pan.baidu.com/s/1PXnlpoZxmtK1cThaFEj1vg?pwd=0000)
+- OCR标注工具：[链接](https://pan.baidu.com/s/1UudJGGLMBX0vWYn7JAYB0g?pwd=0000)
 
 #### 标注样例
 
