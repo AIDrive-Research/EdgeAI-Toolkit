@@ -37,13 +37,13 @@
 
 |                             类型                             |                             介绍                             |                   参考样例                   | 视频教程                                                     |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------: | ------------------------------------------------------------ |
-| 快速入门类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。无需编写代码，替换为自有模型，修改配置即可使用。 |     [样例](engine/examples/quick_start)      | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 目标检测类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。如区域入侵、离岗检测、车型检测等。业务逻辑简单，使用最广泛。 |   [样例](engine/examples/object_detection)   | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 模型级联类<br>![cascade_class.png](docs/assets/cascade_class.png) | 模型A的输出作为模型B的输入，算法基于模型B的输出决策。如未佩戴安全帽检测、抽烟检测、使用手机检测等。 |   [样例](engine/examples/model_cascading)    | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 模型并联类<br>![para_class.png](docs/assets/para_class.png)  | 算法基于模型A/B的并行化输出决策。如未穿戴反光衣检测、挂钩高挂低用检测等。 |  [样例](engine/examples/model_parallelism)   | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 目标跟踪类<br>![track_class.png](docs/assets/track_class.png) | 算法基于同一目标在多帧下的坐标或时间数据决策。如徘徊检测、睡岗检测等。 |   [样例](engine/examples/object_tracking)    | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 目标计数类<br>![count_class.png](docs/assets/count_class.png) | 算法基于跟踪数据与预设直线数据决策。如人员计数、车辆计数等。 |   [样例](engine/examples/object_counting)    | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
-| 底库比对类<br>![compare_class.png](docs/assets/compare_class.png) | 算法基于在线图像或目标特征与底库特征数据比对决策。如人脸识别、未穿工服检测、消防通道占用检测等。 | [样例](engine/examples/base_lib_comparision) | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
+| 快速入门类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。无需编写代码，替换为自有模型，修改配置即可使用。 |     [样例](engine/examples/quick_start)      | [查看](https://www.bilibili.com/video/BV17WQHYbEmY/?spm_id_from=333.1387.upload.video_card.click&vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
+| 目标检测类<br><img src="docs/assets/obj_class.png" style="opacity: 1;"> | 单模型目标检测算法。如区域入侵、离岗检测、车型检测等。业务逻辑简单，使用最广泛。 |   [样例](engine/examples/object_detection)   | [查看](https://www.bilibili.com/video/BV1BHQHYfEZy/?spm_id_from=333.1387.upload.video_card.click&vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
+| 模型级联类<br>![cascade_class.png](docs/assets/cascade_class.png) | 模型A的输出作为模型B的输入，算法基于模型B的输出决策。如未佩戴安全帽检测、抽烟检测、使用手机检测等。 |   [样例](engine/examples/model_cascading)    | [查看](https://www.bilibili.com/video/BV1zHQHYfEF2/?spm_id_from=333.1387.upload.video_card.click) |
+| 模型并联类<br>![para_class.png](docs/assets/para_class.png)  | 算法基于模型A/B的并行化输出决策。如未穿戴反光衣检测、挂钩高挂低用检测等。 |  [样例](engine/examples/model_parallelism)   | [查看](https://www.bilibili.com/video/BV1EHQHYfECQ/?spm_id_from=333.1387.upload.video_card.click) |
+| 目标跟踪类<br>![track_class.png](docs/assets/track_class.png) | 算法基于同一目标在多帧下的坐标或时间数据决策。如徘徊检测、睡岗检测等。 |   [样例](engine/examples/object_tracking)    | [查看](https://www.bilibili.com/video/BV1hzQHY7EMA/?spm_id_from=333.1387.upload.video_card.click) |
+| 目标计数类<br>![count_class.png](docs/assets/count_class.png) | 算法基于跟踪数据与预设直线数据决策。如人员计数、车辆计数等。 |   [样例](engine/examples/object_counting)    | [查看](https://www.bilibili.com/video/BV1gzQHY7Ea2/?spm_id_from=333.1387.upload.video_card.click) |
+| 底库比对类<br>![compare_class.png](docs/assets/compare_class.png) | 算法基于在线图像或目标特征与底库特征数据比对决策。如人脸识别、未穿工服检测、消防通道占用检测等。 | [样例](engine/examples/base_lib_comparision) | [查看](https://www.bilibili.com/video/BV1gzQHY7ES4/?spm_id_from=333.1387.upload.video_card.click) |
 
 ## 02数据集
 
