@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # 配置参数
-device = torch.device("cuda:1" if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 lr = 0.0001
 batch_size = 64
 n_classes = 2
@@ -19,8 +19,7 @@ epochs = 300
 
 # 数据预处理
 transform_train = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.RandomCrop(224),
+    transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(),
     transforms.ColorJitter(),
     transforms.RandomGrayscale(),
@@ -92,7 +91,7 @@ def main():
         if test_acc > best_accuracy:
             best_accuracy = test_acc
             print('保存最佳模型！')
-            torch.save(model.state_dict(), "weights/sleep_20241219.pth")
+            torch.save(model.state_dict(), "best.pth")
 
         end_time = time.time()
         print(f"第{epoch + 1}轮 | 耗时: {end_time - start_time:.2f}s | "
