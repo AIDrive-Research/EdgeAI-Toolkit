@@ -1,0 +1,7 @@
+zql_fog_classify:
+  type: zql_classify
+  args:
+    img_size: 224
+    conf_thres: 0.5
+  infer_time: 15
+  

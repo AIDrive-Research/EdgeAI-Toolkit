@@ -1,0 +1,15 @@
+name: fog
+ch_name: 雨雾识别
+desc: 适用于室外雨雾识别
+group_name: 行业定制
+model:
+  zql_fog_classify:
+    inactive: true
+    label:
+      class2label:
+        0: fog
+        1: normal
+        2: rain
+alert_label: [ ]
+process_time: 10
+version: ks916-v2.0
