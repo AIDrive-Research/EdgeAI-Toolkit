@@ -270,7 +270,7 @@ class Postprocessor(BasePostprocessor):
 
 ```json
 {
-	"hit": True,
+	"hit": true,
 	"data": {
 		"bbox": {
 			"rectangles": [],
