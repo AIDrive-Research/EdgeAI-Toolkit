@@ -270,14 +270,14 @@ class Postprocessor(BasePostprocessor):
 
 ```json
 {
-	'hit': True,
-	'data': {
-		'bbox': {
-			'rectangles': [],
-			'polygons': {},
-			'lines': {}
+	"hit": True,
+	"data": {
+		"bbox": {
+			"rectangles": [],
+			"polygons": {},
+			"lines": {}
 		},
-		'custom': {}
+		"custom": {}
 	}
 }
 ```
@@ -286,8 +286,8 @@ class Postprocessor(BasePostprocessor):
 
 ```json
 {
-	'zql_fog_classify': [{
-		'output': [0.6289392709732056, 0.26854440569877625, 0.1025162935256958]
+	"zql_fog_classify": [{
+		"output": [0.6289392709732056, 0.26854440569877625, 0.1025162935256958]
 	}]
 }
 ```
