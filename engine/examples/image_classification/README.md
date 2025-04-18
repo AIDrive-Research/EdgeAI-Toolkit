@@ -17,8 +17,7 @@ git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git
 
 ### 2. 模型训练
 
-- 标准模型训练：[本仓库](../../../)03模型训练中，提供了5大类5种模型训练方法。
-- 自有模型训练：根据自有代码训练模型。
+参考分类模型训练[文档](../../../train/classify/resnet18/)，训练模型。
 
 注：经过模型训练，需导出onnx格式权重，便于后续模型量化。
 
