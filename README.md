@@ -33,7 +33,7 @@
 
 ### 开发样例
 
-教程提供了七种算法包样例，用户可根据需求，参照相应样例，开发专有算法包。
+教程提供了八种算法包样例，用户可根据需求，参照相应样例，开发专有算法包。
 
 |                             类型                             |                             介绍                             |                   参考样例                   | 视频教程                                                     |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :------------------------------------------: | ------------------------------------------------------------ |
@@ -44,7 +44,7 @@
 | 目标跟踪类<br>![track_class.png](docs/assets/track_class.png) | 算法基于同一目标在多帧下的坐标或时间数据决策。如徘徊检测、睡岗检测等。 |   [样例](engine/examples/object_tracking)    | [查看](https://www.bilibili.com/video/BV1hzQHY7EMA/?spm_id_from=333.1387.upload.video_card.click) |
 | 目标计数类<br>![count_class.png](docs/assets/count_class.png) | 算法基于跟踪数据与预设直线数据决策。如人员计数、车辆计数等。 |   [样例](engine/examples/object_counting)    | [查看](https://www.bilibili.com/video/BV1gzQHY7Ea2/?spm_id_from=333.1387.upload.video_card.click) |
 | 底库比对类<br>![compare_class.png](docs/assets/compare_class.png) | 算法基于在线图像或目标特征与底库特征数据比对决策。如人脸识别、未穿工服检测、消防通道占用检测等。 | [样例](engine/examples/base_lib_comparision) | [查看](https://www.bilibili.com/video/BV1gzQHY7ES4/?spm_id_from=333.1387.upload.video_card.click) |
-| 图像分类类<br>![compare_class.png](docs/assets/obj_class.png) |       图像分类算法。如雨雾识别、矿石颗粒度等级检测等。       | [样例](engine/examples/image_classification) |                                                              |
+| 图像分类类<br>![compare_class.png](docs/assets/obj_class.png) |       图像分类算法。如雨雾识别、矿石颗粒度等级检测等。       | [样例](engine/examples/image_classification) | [查看](https://www.bilibili.com/video/BV1pt5UzbEXE/?vd_source=60ef6f0da0c658fa6bfed9073fea6ead) |
 
 ## 02数据集
 
