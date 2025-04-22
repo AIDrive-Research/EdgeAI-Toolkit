@@ -1,13 +1,14 @@
 import torch
 import torchvision.models as models
 
-input_path = './weights/sleep_20241219.pth'
-output_path = 'sleep_classify_20241219_classify.onnx'
+input_path = 'best.pth'
+output_path = 'best.onnx'
+num_classes= 2
 
 
 # 定义模型
 model = models.resnet18(pretrained=False)
-model.fc = torch.nn.Linear(in_features=512, out_features=2)
+model.fc = torch.nn.Linear(in_features=512, out_features=num_classes)
 model.load_state_dict(torch.load(input_path))
 model.eval()
 
