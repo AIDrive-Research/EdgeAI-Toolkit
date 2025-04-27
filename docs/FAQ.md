@@ -50,10 +50,21 @@ LOGGER.info('boxes:{},classes:{},scores:{}'.format(boxes, classes, scores))
 tail -f ks/ks968/data/logs/engine/0/engine.log
 ```
 
+![faq_4](./assets/faq_4.png)
+
 查看后处理模块日志。
 
 ```bash
 tail -f ks/ks968/data/logs/filter/filter.log
 ```
 
-![faq_3](./assets/faq_4.png)
+![faq_6](./assets/faq_6.png)
+
+
+
+
+
+
+
+
+
