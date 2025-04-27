@@ -9,7 +9,6 @@ model:
       class2label:
         0: fog
         1: normal
-        2: rain
-alert_label: [ ]
+alert_label: [ fog ]
 process_time: 10
 version: ks968-v2.0
