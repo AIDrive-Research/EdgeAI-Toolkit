@@ -68,7 +68,7 @@ tail -f ks/ks968/data/logs/filter/filter.log
 
 ![faq_7](./assets/faq_7.jpg)
 
-2. 如果修改正确。按照[5、调试代码&查看日志](#5、如何调试代码&查看日志？)中的方法，查看engine与filter日志。
+2. 如果修改正确。按照上述【调试代码&查看日志】中的方法，查看engine与filter日志。
 
 - 查看engine日志，查看是否报错。如下推理报错，显示`zql_classify.py`中第37行出现错误。并给出了错误类型，可通过添加日志调试修复。
 
