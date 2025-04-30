@@ -56,9 +56,8 @@ if __name__ == '__main__':
     else:
         rknn.config(
             target_platform=platform,
-            # In order to improve accuracy, these nodes need to fallback to CPU on RKNPU2 platform.
-            op_target={'p2o.Add.235_shape4':'cpu', 'p2o.Add.245_shape4':'cpu', 'p2o.Add.255_shape4':'cpu',
-                    'p2o.Add.265_shape4':'cpu', 'p2o.Add.275_shape4':'cpu'}
+            mean_values=[[127.5, 127.5, 127.5]],
+            std_values=[[127.5, 127.5, 127.5]]
         )
 
     print('done')
