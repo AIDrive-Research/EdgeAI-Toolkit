@@ -474,7 +474,6 @@ class Postprocessor(BasePostprocessor):
             if score >= model_conf['args']['conf_thres']:
                 targets.append(engine_result)
         return targets
-
 ```
 
 **核心函数：__process**

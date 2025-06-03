@@ -19,4 +19,4 @@ model:
         1: normal
 alert_label: [ ]
 process_time: 10
-version: ks968-v7.0
+version: ks968-v8.0

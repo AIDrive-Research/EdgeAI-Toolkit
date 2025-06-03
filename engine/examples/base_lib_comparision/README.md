@@ -244,17 +244,17 @@ import numpy as np
 import gv
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'person'
-        self.workclothes_model_name = 'work_clothes'
+        self.person_model_name = 'zql_person'
+        self.workclothes_model_name = 'zql_work_clothes'
         self.index = None
         self.group_type = None
         self.similarity = None
@@ -269,7 +269,7 @@ class Postprocessor(BasePostprocessor):
             LOGGER.error('Person model result is None!')
             return False
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         image_height, image_width, _ = draw_image.shape
         count = 0
         for person_rectangle in person_rectangles:
@@ -285,7 +285,7 @@ class Postprocessor(BasePostprocessor):
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.workclothes_model_name],
@@ -293,7 +293,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {
@@ -417,7 +417,6 @@ class Postprocessor(BasePostprocessor):
                 'feature': engine_result
             })
         return targets
-
 ```
 
 **核心函数：__process**

@@ -35,7 +35,7 @@
             "iou": 0.7,
 	    "extra_model": {
 		    "zql_fire_classify": 1
-	    }
+			}
         }
     },
     "renderParams": {

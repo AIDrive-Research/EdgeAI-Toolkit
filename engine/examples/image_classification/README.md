@@ -150,10 +150,10 @@ import numpy as np
 
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
@@ -178,7 +178,7 @@ class Postprocessor(BasePostprocessor):
     def __reinfer(self, polygons):
         count = 0
         roi_list = []
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         if polygons:
             roi_list = self.__get_polygons_box(polygons)
         for polygon_id, roi in roi_list:
@@ -187,7 +187,7 @@ class Postprocessor(BasePostprocessor):
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.model_name],
@@ -195,7 +195,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if not roi_list:
             cropped_image = draw_image
@@ -203,7 +203,7 @@ class Postprocessor(BasePostprocessor):
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.model_name],

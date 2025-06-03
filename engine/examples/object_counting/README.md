@@ -6,8 +6,8 @@ git clone https://github.com/AIDrive-Research/EdgeAI-Toolkit.git
 
 下载示例算法包，并在示例算法包上修改。
 
-- 如果产品型号为ks968，则在ks968下的person_loitering算法包上修改。
-- 如果产品型号为ks916，则在ks916下的person_loitering算法包上修改。
+- 如果产品型号为ks968，则在ks968下的person_counting算法包上修改。
+- 如果产品型号为ks916，则在ks916下的person_counting算法包上修改。
 
 ![quick_start_1.png](../../../docs/assets/quick_start_1.png)
 

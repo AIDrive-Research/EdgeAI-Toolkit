@@ -16,4 +16,4 @@ model:
         0: person
 alert_label: [ ]
 process_time: 10
-version: ks968-v8.0
+version: ks968-v9.0

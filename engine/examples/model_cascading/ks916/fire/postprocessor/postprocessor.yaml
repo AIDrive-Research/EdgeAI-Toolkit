@@ -19,4 +19,4 @@ model:
         1: normal
 alert_label: [ ]
 process_time: 20
-version: ks916-v7.0
+version: ks916-v8.0
