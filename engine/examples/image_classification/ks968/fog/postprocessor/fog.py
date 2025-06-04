@@ -63,7 +63,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {
