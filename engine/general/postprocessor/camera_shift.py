@@ -91,7 +91,7 @@ class Postprocessor(BasePostprocessor):
             base_info = self.index.query(id_)
             if base_info:
                 return False, base_info['name']
-        return True, '通道堵塞'
+        return True, '摄像头挪动角度'
 
     def __check_move(self, gray_image, polygons):
         if self.pre_gray is None:

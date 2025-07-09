@@ -3,18 +3,17 @@ import numpy as np
 import gv
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'pose'
-        self.torso_model_name = 'ppe'
-        self.alert_label = '未穿救生衣'
+        self.person_model_name = 'zql_pose'
+        self.torso_model_name = 'zql_ppe'
         self.non_alert_label = '人'
         self.index = None
         self.group_type = None
@@ -79,7 +78,7 @@ class Postprocessor(BasePostprocessor):
             return False
         person_results = []
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         count = 0
         for i in range(len(person_rectangles)):
             if count >= self.limit:
@@ -98,7 +97,7 @@ class Postprocessor(BasePostprocessor):
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(torso_image),
+                'infer_image': mat_to_bytes(torso_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.torso_model_name],
@@ -106,7 +105,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {

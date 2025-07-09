@@ -1,16 +1,16 @@
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.det_model_name = 'fall_down'
-        self.cls_model_name = 'fall_down_classify'
+        self.det_model_name = 'zql_fall_down'
+        self.cls_model_name = 'zql_fall_down_classify'
         self.distance = 10
         self.timeout = None
         self.reinfer_result = {}
@@ -21,8 +21,7 @@ class Postprocessor(BasePostprocessor):
         if rectangles is None:
             LOGGER.error('Fall down model result is None!')
             return False
-        draw_image = base64_to_opencv(self.draw_image)
-        image_shape = draw_image.shape
+        draw_image = bytes_to_mat(self.draw_image)
         count = 0
         normal_rectangles = []
         for rectangle in rectangles:
@@ -32,14 +31,10 @@ class Postprocessor(BasePostprocessor):
             xyxy = rectangle['xyxy']
             cropped_image = crop_rectangle(draw_image, xyxy)
             cropped_image = rgb_reverse(cropped_image)
-            if (xyxy[0] < self.distance) \
-                    or (xyxy[3] > image_shape[0] - self.distance) \
-                    or (xyxy[2] > image_shape[1] - self.distance):
-                continue
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.cls_model_name],
@@ -47,7 +42,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {

@@ -5,7 +5,6 @@ from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from .utils import json_utils
 from .utils.cv_utils.geo_utils import get_polygon_edges
-from .utils.image_utils import base64_to_bytes
 from .utils.unique_id_utils import get_object_id
 
 
@@ -194,7 +193,7 @@ class Postprocessor(BasePostprocessor):
                 continue
             # 坐标缩放
             xyxy = self._scale(engine_result_['xyxy'])
-            mask = cv2.imdecode(np.frombuffer(base64_to_bytes(engine_result_['mask']), np.uint8), cv2.IMREAD_GRAYSCALE)
+            mask = cv2.imdecode(np.frombuffer(engine_result_['mask'], np.uint8), cv2.IMREAD_GRAYSCALE)
             height, width = mask.shape
             mask = cv2.resize(mask, (int(width * self.scale), int(height * self.scale)), interpolation=cv2.INTER_LINEAR)
             _, mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)

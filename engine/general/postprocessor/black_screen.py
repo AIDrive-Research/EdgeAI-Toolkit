@@ -3,7 +3,7 @@ import numpy as np
 
 from postprocessor import Postprocessor as BasePostprocessor
 from .utils import json_utils
-from .utils.image_utils import base64_to_opencv
+from .utils.image_utils.turbojpegutils import bytes_to_mat
 
 
 class Postprocessor(BasePostprocessor):
@@ -18,7 +18,7 @@ class Postprocessor(BasePostprocessor):
             self.threshold = self.reserved_args['threshold']
         polygons = self._gen_polygons()
         model_name, infer_image = next(iter(filter_result.items()))
-        infer_image = base64_to_opencv(infer_image)
+        infer_image = bytes_to_mat(infer_image)
         infer_image = cv2.cvtColor(infer_image, cv2.COLOR_BGR2GRAY)
         for polygon in polygons.values():
             polygon_key = json_utils.dumps(polygon['polygon'])

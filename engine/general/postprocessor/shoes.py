@@ -7,17 +7,18 @@ import gv
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64, base64_to_bytes
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'pose'
-        self.mask_model_name = 'segment'
-        self.shoes_model_name = 'ppe'
+        self.person_model_name = 'zql_pose'
+        self.mask_model_name = 'zql_segment'
+        self.shoes_model_name = 'zql_ppe'
         self.index = None
         self.group_type = None
         self.similarity = None
@@ -262,7 +263,7 @@ class Postprocessor(BasePostprocessor):
             return False
         person_results = []
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         count = 0
         count_shoes = 0
         for i in range(len(person_rectangles)):
@@ -272,15 +273,15 @@ class Postprocessor(BasePostprocessor):
             cropped_image = crop_rectangle(draw_image, xyxy)
             cropped_image = rgb_reverse(cropped_image)
             data = self.__shoes_data_prepare(xyxy, self._get_ext(person_rectangles[i], 'key_points'), mask)
-            shoes_image = self.__gen_shoes_region(cropped_image, data)
-            if not shoes_image:
+            shoes_images = self.__gen_shoes_region(cropped_image, data)
+            if not shoes_images:
                 person_results.append(self._gen_rectangle(xyxy, (0, 255, 255), '人', None))
                 continue
-            for shoes_image in shoes_image:
+            for shoes_image in shoes_images:
                 source_data = {
                     'source_id': self.source_id,
                     'time': self.time * 1000000,
-                    'infer_image': opencv_to_base64(shoes_image),
+                    'infer_image': mat_to_bytes(shoes_image),
                     'draw_image': None,
                     'reserved_data': {
                         'specified_model': [self.shoes_model_name],
@@ -288,7 +289,7 @@ class Postprocessor(BasePostprocessor):
                         'unsort': True
                     }
                 }
-                self.rq_source.put(json_utils.dumps(source_data))
+                self.rq_source.put(msgpack_utils.dump(source_data))
                 count_shoes += 1
             count += 1
         if count_shoes > 0:
@@ -314,8 +315,7 @@ class Postprocessor(BasePostprocessor):
             # 过滤掉置信度低于阈值的目标
             if engine_result_['conf'] < model_conf['args']['conf_thres']:
                 continue
-            result_mask = cv2.imdecode(np.frombuffer(base64_to_bytes(engine_result_['mask']), np.uint8),
-                                       cv2.IMREAD_GRAYSCALE)
+            result_mask = cv2.imdecode(np.frombuffer(engine_result_['mask'], np.uint8), cv2.IMREAD_GRAYSCALE)
             result_mask = cv2.resize(result_mask, (self.image_width, self.image_height), interpolation=cv2.INTER_LINEAR)
             _, result_mask = cv2.threshold(result_mask, 127, 255, cv2.THRESH_BINARY)
             mask = cv2.bitwise_or(mask, result_mask)
@@ -373,7 +373,10 @@ class Postprocessor(BasePostprocessor):
             return False
         reinfer_result_ = self.reinfer_result.pop(self.time)
         self.draw_image = reinfer_result_['draw_image']
+        alert_person = {}
+        noalert_person = {}
         for targets, xyxy in reinfer_result_['result']:
+            xyxy_str = json_utils.dumps(xyxy)
             for target in targets:
                 feature = target.pop('feature', None)
                 if feature is not None:
@@ -386,12 +389,18 @@ class Postprocessor(BasePostprocessor):
                         LOGGER.error('Unknown group_type: {}'.format(self.group_type))
                         continue
                     if hit_:
-                        hit = hit_
-                        result['data']['bbox']['rectangles'].append(self._gen_rectangle(
-                            xyxy, self.alert_color, label, None))
+                        alert_person[xyxy_str] = label
                     else:
-                        result['data']['bbox']['rectangles'].append(self._gen_rectangle(
-                            xyxy, self.non_alert_color, label, None))
+                        noalert_person[xyxy_str] = label
+        for xyxy_str, label in noalert_person.items():
+            xyxy = json_utils.loads(xyxy_str)
+            result['data']['bbox']['rectangles'].append(self._gen_rectangle(xyxy, self.non_alert_color, label, None))
+        for xyxy_str, label in alert_person.items():
+            if xyxy_str in noalert_person.keys():
+                continue
+            hit = True
+            xyxy = json_utils.loads(xyxy_str)
+            result['data']['bbox']['rectangles'].append(self._gen_rectangle(xyxy, self.alert_color, label, None))
         result['hit'] = hit
         result['data']['bbox']['rectangles'].extend(reinfer_result_['person_results'])
         result['data']['bbox']['polygons'].update(polygons)
@@ -406,7 +415,7 @@ class Postprocessor(BasePostprocessor):
         if model_name == self.shoes_model_name and not self.reserved_data:
             return targets
         if self.image_height is None:
-            draw_image = base64_to_opencv(self.draw_image)
+            draw_image = bytes_to_mat(self.draw_image)
             self.image_height, self.image_width = draw_image.shape[:2]
         model_conf = model_data['model_conf']
         engine_result = model_data['engine_result']

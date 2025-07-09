@@ -3,59 +3,28 @@ from postprocessor import Postprocessor as BasePostprocessor
 from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.cv_utils.geo_utils import is_point_in_rectangle
 from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.helmet_model_name = 'zql_helmet'
-        self.person_model_name = 'zql_person'
-        self.cls_model_name = 'zql_helmet_classify'
+        self.det_model_name = 'zql_garbage'
+        self.cls_model_name = 'zql_garbage_classify'
         self.timeout = None
         self.reinfer_result = {}
-        self.helmet_label = 0
-
-    @staticmethod
-    def __expand_box(rectangle, expand_w, expand_h, img_w, img_h):
-        min_x, min_y, max_x, max_y = rectangle
-        # 计算矩形的中心点
-        center_x = (min_x + max_x) / 2
-        center_y = (min_y + max_y) / 2
-        # 计算矩形的宽度和高度
-        width = max_x - min_x
-        height = max_y - min_y
-        # 按比例扩大矩形框
-        new_width = width + expand_w * 2
-        new_height = height + expand_h * 2
-        # 计算扩大后的矩形框的坐标
-        new_min_x = max(0, center_x - new_width / 2)
-        new_max_x = min(img_w, center_x + new_width / 2)
-        new_min_y = max(0, center_y - new_height / 2)
-        new_max_y = min(img_h, center_y + new_height / 2)
-        if new_min_x > new_max_x or new_min_y > new_max_y:
-            return None
-        return [int(new_min_x), int(new_min_y), int(new_max_x), int(new_max_y)]
+        self.garbage_label = 0
 
     def __reinfer(self, filter_result):
-        helmet_rectangles = filter_result.get(self.helmet_model_name)
-        if helmet_rectangles is None:
-            LOGGER.error('Helmet model result is None!')
-            return False
-        person_rectangles = filter_result.get(self.person_model_name)
-        if person_rectangles is None:
-            LOGGER.error('Person model result is None!')
+        garbage_rectangles = filter_result.get(self.det_model_name)
+        if garbage_rectangles is None:
+            LOGGER.error('Garbage model result is None!')
             return False
         draw_image = bytes_to_mat(self.draw_image)
-        img_h, img_w = draw_image.shape[:2]
         count = 0
-        for helmet_rectangle in helmet_rectangles:
-            if helmet_rectangle['label'] not in self.alert_label:
-                continue
-            xyxy = helmet_rectangle['xyxy']
-            bbox = self.__expand_box(xyxy, 5, 5, img_w, img_h)
-            cropped_image = crop_rectangle(draw_image, bbox)
+        for garbage_rectangle in garbage_rectangles:
+            xyxy = garbage_rectangle['xyxy']
+            cropped_image = crop_rectangle(draw_image, xyxy)
             cropped_image = rgb_reverse(cropped_image)
             source_data = {
                 'source_id': self.source_id,
@@ -64,7 +33,7 @@ class Postprocessor(BasePostprocessor):
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.cls_model_name],
-                    'rectangle': helmet_rectangle,
+                    'rectangle': garbage_rectangle,
                     'unsort': True
                 }
             }
@@ -74,29 +43,9 @@ class Postprocessor(BasePostprocessor):
             self.reinfer_result[self.time] = {
                 'count': count,
                 'draw_image': self.draw_image,
-                'person_rectangles': person_rectangles,
                 'result': []
             }
-        return count, person_rectangles
-
-    @staticmethod
-    def calc_iou(xyxy_head, xyxy_person):
-        """
-        计算两个矩形的IOU/head
-        Args:
-            xyxy1: 矩形1的左上角和右下角坐标
-            xyxy2: 矩形2的左上角和右下角坐标
-        Returns: IOU
-        """
-        left_max = max(xyxy_head[0], xyxy_person[0])
-        right_min = min(xyxy_head[2], xyxy_person[2])
-        up_max = max(xyxy_head[1], xyxy_person[1])
-        down_min = min(xyxy_head[3], xyxy_person[3])
-        if left_max >= right_min or down_min <= up_max:
-            return 0
-        s1 = (xyxy_head[2] - xyxy_head[0]) * (xyxy_head[3] - xyxy_head[1])
-        s_cross = (down_min - up_max) * (right_min - left_max)
-        return s_cross / s1
+        return count
 
     def __check_expire(self):
         for time in list(self.reinfer_result.keys()):
@@ -113,11 +62,10 @@ class Postprocessor(BasePostprocessor):
             LOGGER.info('source_id={}, alg_name={}, timeout={}'.format(self.source_id, self.alg_name, self.timeout))
         polygons = self._gen_polygons()
         if not self.reserved_data:
-            count, person_results = self.__reinfer(filter_result)
+            count = self.__reinfer(filter_result)
             if not count:
                 self.__check_expire()
-                result['hit'] = hit
-                result['data']['bbox']['rectangles'].extend(person_results)
+                result['hit'] = False
                 result['data']['bbox']['polygons'].update(polygons)
                 return True
             return False
@@ -134,30 +82,17 @@ class Postprocessor(BasePostprocessor):
             return False
         reinfer_result_ = self.reinfer_result.pop(self.time)
         self.draw_image = reinfer_result_['draw_image']
-        person_rectangles = reinfer_result_['person_rectangles']
-        for targets, helmet_rectangle in reinfer_result_['result']:
+        garbage_rectangles = []
+        for targets, rectangle in reinfer_result_['result']:
             if not targets:
                 continue
-            max_iou = 0
-            hit_person = None
-            for i, person_rectangle in enumerate(person_rectangles):
-                # 下边沿中心点
-                point = ((helmet_rectangle['xyxy'][0] + helmet_rectangle['xyxy'][2]) / 2,
-                         helmet_rectangle['xyxy'][3])
-                if not is_point_in_rectangle(point, person_rectangle['xyxy']):
-                    continue
-                iou = self.calc_iou(helmet_rectangle['xyxy'], person_rectangle['xyxy'])
-                if iou > max_iou:
-                    max_iou = iou
-                    hit_person = i
-            if hit_person is not None and max_iou > 0.8:
-                hit = True
-                person_rectangles[hit_person]['color'] = self.alert_color
-                person_rectangles[hit_person]['label'] = self.alert_label[0]
+            hit = True
+            rectangle['color'] = self.alert_color
+            garbage_rectangles.append(rectangle)
         result['hit'] = hit
-        result['data']['bbox']['rectangles'].extend(person_rectangles)
+        result['data']['bbox']['rectangles'].extend(garbage_rectangles)
         result['data']['bbox']['polygons'].update(polygons)
-        return result
+        return True
 
     def _filter(self, model_name, model_data):
         targets = []
@@ -165,7 +100,7 @@ class Postprocessor(BasePostprocessor):
             return targets
         model_conf = model_data['model_conf']
         engine_result = model_data['engine_result']
-        if model_name in [self.helmet_model_name, self.person_model_name]:
+        if model_name == self.det_model_name:
             for engine_result_ in engine_result:
                 # 过滤掉置信度低于阈值的目标
                 if not self._filter_by_conf(model_conf, engine_result_['conf']):
@@ -180,9 +115,10 @@ class Postprocessor(BasePostprocessor):
                 if not self._filter_by_roi(xyxy):
                     continue
                 # 生成矩形框
-                targets.append(self._gen_rectangle(xyxy, self.non_alert_color, label, engine_result_['conf']))
+                targets.append(self._gen_rectangle(
+                    xyxy, self._get_color(model_conf['label'], label), label, engine_result_['conf']))
         elif model_name == self.cls_model_name:
-            score = engine_result['output'][self.helmet_label]
+            score = engine_result['output'][self.garbage_label]
             if score >= model_conf['args']['conf_thres']:
                 targets.append(engine_result)
         return targets

@@ -15,7 +15,7 @@ class Postprocessor(BasePostprocessor):
         self.tracker = None
         self.max_retain = 0
         self.targets = {}
-        self.model_name = 'face_landmark'
+        self.model_name = 'zql_face_landmark'
         self.left_eye_index = [35, 36, 37, 39, 41, 42]
         self.right_eye_index = [89, 90, 91, 93, 95, 96]
 
@@ -82,8 +82,7 @@ class Postprocessor(BasePostprocessor):
             if target is None:
                 target = {
                     'window': RatioWindow(self.length, self.threshold),
-                    'lost': 0,
-                    'hit': False
+                    'lost': 0
                 }
                 self.targets[track_id] = target
                 continue
@@ -96,20 +95,19 @@ class Postprocessor(BasePostprocessor):
             if lm[39][0] - lm[35][0] == 0 or lm[93][0] - lm[89][0] == 0:
                 result['data']['bbox']['rectangles'].append(self.__get_eye_rectangle(left_eye_box, hit_flag))
                 result['data']['bbox']['rectangles'].append(self.__get_eye_rectangle(right_eye_box, hit_flag))
+                target['window'].insert({'time': self.time, 'data': {'hit': False}})
                 continue
             era_left = (abs(lm[36][1] - lm[41][1]) + abs(lm[37][1] - lm[42][1])) / (abs(lm[39][0] - lm[35][0]) * 2)
             era_right = (abs(lm[90][1] - lm[95][1]) + abs(lm[91][1] - lm[96][1])) / (abs(lm[93][0] - lm[89][0]) * 2)
             if (era_left + era_right) / 2 < self.sensitivity:
                 hit_flag = True
-                target['hit'] = True
                 rectangle['color'] = self.alert_color
             result['data']['bbox']['rectangles'].append(self.__get_eye_rectangle(left_eye_box, hit_flag))
             result['data']['bbox']['rectangles'].append(self.__get_eye_rectangle(right_eye_box, hit_flag))
-            if target['window'].insert({'time': self.time, 'data': {'hit': target['hit']}}):
+            if target['window'].insert({'time': self.time, 'data': {'hit': hit_flag}}):
                 hit = True
                 rectangle['color'] = self.alert_color
                 rectangle['label'] = self.alert_label[0]
-                target['window'] = RatioWindow(self.length, self.threshold)
             else:
                 rectangle['color'] = self.non_alert_color
         result['hit'] = hit

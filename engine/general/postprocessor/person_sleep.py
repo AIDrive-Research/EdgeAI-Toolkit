@@ -2,18 +2,18 @@ from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from tracker import Tracker
 from window.ratio_window import RatioWindow
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
 from .utils.cv_utils.geo_utils import calc_iou
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.det_model_name = 'person'
-        self.cls_model_name = 'sleep_classify'
+        self.det_model_name = 'zql_person'
+        self.cls_model_name = 'zql_sleep_classify'
         self.strategy = None
         self.iou = None
         self.length = None
@@ -79,14 +79,13 @@ class Postprocessor(BasePostprocessor):
             if len(target['pre_targets']) > self.pre_n:
                 target['pre_targets'].pop(0)
             if target['window'].insert({'time': self.time, 'data': {'hit': target['hit']}}):
-                target['window'] = RatioWindow(self.length, self.threshold)
-                draw_image = base64_to_opencv(self.draw_image)
+                draw_image = bytes_to_mat(self.draw_image)
                 cropped_image = crop_rectangle(draw_image, rectangle['xyxy'])
                 cropped_image = rgb_reverse(cropped_image)
                 source_data = {
                     'source_id': self.source_id,
                     'time': self.time * 1000000,
-                    'infer_image': opencv_to_base64(cropped_image),
+                    'infer_image': mat_to_bytes(cropped_image),
                     'draw_image': None,
                     'reserved_data': {
                         'specified_model': [self.cls_model_name],
@@ -94,7 +93,7 @@ class Postprocessor(BasePostprocessor):
                         'unsort': True
                     }
                 }
-                self.rq_source.put(json_utils.dumps(source_data))
+                self.rq_source.put(msgpack_utils.dump(source_data))
                 count += 1
             else:
                 rectangles.append(rectangle)
@@ -102,6 +101,7 @@ class Postprocessor(BasePostprocessor):
                 self.reinfer_result[self.time] = {
                     'count': count,
                     'draw_image': self.draw_image,
+                    'person_rectangles': rectangles,
                     'result': []
                 }
         return count, rectangles
@@ -162,6 +162,7 @@ class Postprocessor(BasePostprocessor):
             return False
         reinfer_result_ = self.reinfer_result.pop(self.time)
         self.draw_image = reinfer_result_['draw_image']
+        person_rectangles = reinfer_result_['person_rectangles']
         for targets, rectangle in reinfer_result_['result']:
             if not targets:
                 person_rectangles.append(rectangle)

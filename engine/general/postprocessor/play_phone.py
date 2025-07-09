@@ -1,17 +1,17 @@
-from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
 from .utils.cv_utils.geo_utils import is_rectangle_intersect
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'person'
-        self.play_phone_model_name = 'play_phone'
+        self.person_model_name = 'zql_person'
+        self.play_phone_model_name = 'zql_play_phone'
         self.phone_label = 'phone'
         self.hand_label = 'hand'
         self.alert_label = '使用手机'
@@ -19,32 +19,56 @@ class Postprocessor(BasePostprocessor):
         self.timeout = None
         self.reinfer_result = {}
 
+    @staticmethod
+    def _expand_box(rectangle, scale_w, scale_h, img_w, img_h):
+        min_x, min_y, max_x, max_y = rectangle
+        min_x, min_y, max_x, max_y = int(min_x), int(min_y), int(max_x), int(max_y)
+        # 计算矩形的中心点
+        center_x = (min_x + max_x) / 2
+        center_y = (min_y + max_y) / 2
+        # 计算矩形的宽度和高度
+        width = max_x - min_x
+        height = max_y - min_y
+        # 按比例扩大矩形框
+        new_width = width * scale_w
+        new_height = height * scale_h
+        # 计算扩大后的矩形框的坐标
+        new_min_x = max(0, center_x - new_width / 2)
+        new_max_x = min(img_w, center_x + new_width / 2)
+        new_min_y = max(0, center_y - new_height / 2)
+        new_max_y = min(img_h, center_y + new_height / 2)
+        if new_min_x > new_max_x or new_min_y > new_max_y:
+            return rectangle
+        return [int(new_min_x), int(new_min_y), int(new_max_x), int(new_max_y)]
+
     def __reinfer(self, filter_result):
         person_rectangles = filter_result.get(self.person_model_name)
         if person_rectangles is None:
             LOGGER.error('Person model result is None!')
             return False
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
+        img_h, img_w = draw_image.shape[0], draw_image.shape[1]
         count = 0
         for i in range(self.limit):
             if i >= len(person_rectangles):
                 break
             xyxy = person_rectangles[i]['xyxy']
-            cropped_image = crop_rectangle(draw_image, xyxy)
+            expand_box = self._expand_box(xyxy, 1.2, 1, img_w, img_h)
+            cropped_image = crop_rectangle(draw_image, expand_box)
             cropped_image = rgb_reverse(cropped_image)
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'specified_model': [self.play_phone_model_name],
-                    'xyxy': xyxy,
+                    'xyxy': expand_box,
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {
@@ -69,10 +93,10 @@ class Postprocessor(BasePostprocessor):
         for phone_rectangle in phone_rectangles:
             for hand_rectangle in hand_rectangles:
                 if is_rectangle_intersect(phone_rectangle['xyxy'], hand_rectangle['xyxy']):
-                    hand_rectangle['color'] = self.alert_color
-                    hand_rectangle['label'] = self.alert_label
+                    phone_rectangle['color'] = self.alert_color
+                    phone_rectangle['label'] = self.alert_label
                     break
-        return [x for x in hand_rectangles if x['label'] == self.alert_label]
+        return [x for x in phone_rectangles if x['label'] == self.alert_label]
 
     def _process(self, result, filter_result):
         hit = False
@@ -107,15 +131,15 @@ class Postprocessor(BasePostprocessor):
         for rectangles, xyxy in reinfer_result_['result']:
             if json_utils.dumps(xyxy) not in person_rectangles:
                 person_rectangles[json_utils.dumps(xyxy)] = self._gen_rectangle(xyxy, self.non_alert_color, '人', None)
-            hand_rectangles = self.__check_play_phone(rectangles)
-            if hand_rectangles:
-                for hand_rectangle in hand_rectangles:
-                    hand_rectangle['xyxy'][0] += xyxy[0]
-                    hand_rectangle['xyxy'][1] += xyxy[1]
-                    hand_rectangle['xyxy'][2] += xyxy[0]
-                    hand_rectangle['xyxy'][3] += xyxy[1]
+            phone_rectangles = self.__check_play_phone(rectangles)
+            if phone_rectangles:
+                for phone_rectangle in phone_rectangles:
+                    phone_rectangle['xyxy'][0] += xyxy[0]
+                    phone_rectangle['xyxy'][1] += xyxy[1]
+                    phone_rectangle['xyxy'][2] += xyxy[0]
+                    phone_rectangle['xyxy'][3] += xyxy[1]
                 hit = True
-                result['data']['bbox']['rectangles'].extend(hand_rectangles)
+                result['data']['bbox']['rectangles'].extend(phone_rectangles)
                 person_rectangles[json_utils.dumps(xyxy)]['color'] = self.alert_color
         result['hit'] = hit
         for _, rectangle in person_rectangles.items():

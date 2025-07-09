@@ -5,7 +5,7 @@ import numpy as np
 
 from logger import LOGGER
 from model import RknnModel
-from utils.image_utils import opencv_to_base64
+from utils.image_utils import opencv_to_bytes
 
 
 class Model(RknnModel):
@@ -194,7 +194,7 @@ class Model(RknnModel):
                                        xyxy[2] if xyxy[2] <= raw_width else raw_width,
                                        xyxy[3] if xyxy[3] <= raw_height else raw_height]
                         mask_shape = masks[i].shape
-                        obj['mask'] = opencv_to_base64(
+                        obj['mask'] = opencv_to_bytes(
                             masks[i][int(dh):int(mask_shape[0] - dh), int(dw):int(mask_shape[1] - dw)])
                         infer_result.append(obj)
             except:

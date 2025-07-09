@@ -7,8 +7,9 @@ from logger import LOGGER, LogLevel
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 DATE_FORMAT = '%Y-%m-%d'
 TIME_FORMAT = '%H:%M:%S'
-MIN_TIMESTAMP = time.mktime(datetime.datetime.min.timetuple())
-MAX_TIMESTAMP = time.mktime(datetime.datetime.max.timetuple())
+MIN_TIMESTAMP = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
+MAX_TIMESTAMP = (datetime.datetime(9999, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc) -
+                 datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)).total_seconds()
 
 
 @contextmanager
@@ -34,9 +35,18 @@ def timer(task_name=None, log_level=LogLevel.DEBUG.value):
     return True
 
 
+def timestamp2datetime(timestamp):
+    # 解决2038问题
+    base_time = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    utc_time = base_time + datetime.timedelta(seconds=timestamp)
+    local_offset = -time.timezone
+    local_time = utc_time.astimezone(datetime.timezone(datetime.timedelta(seconds=local_offset)))
+    return local_time
+
+
 def timestamp2str(timestamp, format_):
     try:
-        return datetime.datetime.fromtimestamp(timestamp).strftime(format_)
+        return timestamp2datetime(timestamp).strftime(format_)
     except:
         LOGGER.exception('timestamp2str')
         return None
@@ -82,7 +92,7 @@ def hms2sec(hms):
 def get_weekday(timestamp=None):
     try:
         if timestamp is not None:
-            weekday = datetime.datetime.fromtimestamp(timestamp).weekday() + 1
+            weekday = timestamp2datetime(timestamp).weekday() + 1
         else:
             weekday = datetime.datetime.now().weekday() + 1
         return weekday
@@ -94,9 +104,11 @@ def get_weekday(timestamp=None):
 def get_day_second(timestamp=None):
     try:
         if timestamp is not None:
-            datetime_ = datetime.datetime.fromtimestamp(timestamp)
+            datetime_ = timestamp2datetime(timestamp)
         else:
             datetime_ = datetime.datetime.now()
+        if datetime_.tzinfo is not None:
+            datetime_ = datetime_.replace(tzinfo=None)
         day_start_time = datetime.datetime.combine(datetime_.date(), datetime.datetime.min.time())
         return (datetime_ - day_start_time).total_seconds()
     except:

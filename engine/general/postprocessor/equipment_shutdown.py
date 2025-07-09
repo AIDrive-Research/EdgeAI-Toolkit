@@ -5,7 +5,7 @@ from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from window.ratio_window import RatioWindow
 from .utils import json_utils
-from .utils.image_utils import base64_to_opencv
+from .utils.image_utils.turbojpegutils import bytes_to_mat
 
 
 class Postprocessor(BasePostprocessor):
@@ -38,7 +38,7 @@ class Postprocessor(BasePostprocessor):
         polygons = self._gen_polygons()
         for polygon in polygons.values():
             model_name, infer_image = next(iter(filter_result.items()))
-            infer_image = base64_to_opencv(infer_image)
+            infer_image = bytes_to_mat(infer_image)
             gray_image = cv2.cvtColor(infer_image, cv2.COLOR_BGR2GRAY)
             gray_image = cv2.GaussianBlur(gray_image, (3, 3), 0)
             polygon_str = json_utils.dumps(polygon['polygon'])

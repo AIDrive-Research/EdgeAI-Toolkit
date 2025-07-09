@@ -1,5 +1,5 @@
 from logger import LOGGER
-from utils.image_utils import opencv_to_base64
+from utils.image_utils.turbojpegutils import mat_to_bytes
 
 
 class Model:
@@ -16,7 +16,7 @@ class Model:
         Returns: infer_result
         """
         try:
-            return opencv_to_base64(data)
+            return mat_to_bytes(data)
         except:
             LOGGER.exception('infer')
         return None
