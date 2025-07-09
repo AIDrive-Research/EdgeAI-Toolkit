@@ -1,4 +1,6 @@
 import base64
+import os
+import sys
 from io import BytesIO
 
 import cv2
@@ -6,6 +8,9 @@ import numpy as np
 from PIL import Image
 
 from logger import LOGGER
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(CURRENT_PATH)
 
 
 def bytes_to_base64(data: bytes):
@@ -26,6 +31,22 @@ def base64_to_bytes(data: str):
     Returns: bytes
     """
     return base64.b64decode(data.encode('utf-8'))
+
+
+def read_base64_image(image_path):
+    """
+    读取图像文件并转为base64 string
+    Args:
+        image_path: 图像路径
+    Returns: base64 string or None
+    """
+    try:
+        with open(image_path, 'rb') as f:
+            bytes_data = f.read()
+        return bytes_to_base64(bytes_data)
+    except:
+        LOGGER.exception('read_base64_image')
+    return None
 
 
 def write_base64_image(image: str, image_path):

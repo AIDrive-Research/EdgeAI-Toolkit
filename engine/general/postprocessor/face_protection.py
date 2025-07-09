@@ -12,33 +12,31 @@ from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'zql_person'
-        self.workclothes_model_name = 'zql_work_clothes'
+        self.face_model_name = 'zql_face_quality'
+        self.ppe_model_name = 'zql_ppe'
+        self.threshold = None
         self.index = None
         self.group_type = None
         self.similarity = None
         self.limit = None
         self.timeout = None
         self.reinfer_result = {}
-        self.distance_th = 10
 
     def __reinfer(self, filter_result):
-        person_rectangles = filter_result.get(self.person_model_name)
-        if person_rectangles is None:
-            LOGGER.error('Person model result is None!')
+        face_rectangles = filter_result.get(self.face_model_name)
+        if face_rectangles is None:
+            LOGGER.error('Face model result is None!')
             return False
-        person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
+        face_rectangles = sorted(face_rectangles, key=lambda x: x['conf'], reverse=True)
         draw_image = bytes_to_mat(self.draw_image)
-        image_height, image_width, _ = draw_image.shape
         count = 0
-        for person_rectangle in person_rectangles:
+        for face_rectangle in face_rectangles:
             if count >= self.limit:
                 break
-            xyxy = person_rectangle['xyxy']
-            if xyxy[0] < self.distance_th or \
-                    xyxy[2] > image_width - self.distance_th or \
-                    xyxy[3] > image_height - self.distance_th:
+            quality = face_rectangle['ext']['quality']
+            if quality < self.threshold:
                 continue
+            xyxy = face_rectangle['xyxy']
             cropped_image = crop_rectangle(draw_image, xyxy)
             cropped_image = rgb_reverse(cropped_image)
             source_data = {
@@ -47,7 +45,7 @@ class Postprocessor(BasePostprocessor):
                 'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
-                    'specified_model': [self.workclothes_model_name],
+                    'specified_model': [self.ppe_model_name],
                     'xyxy': xyxy,
                     'unsort': True
                 }
@@ -57,8 +55,8 @@ class Postprocessor(BasePostprocessor):
         if count > 0:
             self.reinfer_result[self.time] = {
                 'count': count,
-                'draw_image': self.draw_image,
-                'result': []
+                'result': [],
+                'draw_image': self.draw_image
             }
         return count
 
@@ -73,18 +71,18 @@ class Postprocessor(BasePostprocessor):
     def __process_blacklist(self, feature):
         id_, score = self.index.search(feature, self.similarity) if self.index is not None else (None, None)
         if id_ is not None:
-            work_clothes_info = self.index.query(id_)
-            if work_clothes_info:
-                return True, work_clothes_info['name']
+            goggles_info = self.index.query(id_)
+            if goggles_info:
+                return True, goggles_info['name']
         return False, '人'
 
     def __process_whitelist(self, feature):
         id_, score = self.index.search(feature, self.similarity) if self.index is not None else (None, None)
         if id_ is not None:
-            work_clothes_info = self.index.query(id_)
-            if work_clothes_info:
-                return False, work_clothes_info['name']
-        return True, '未穿工服'
+            goggles_info = self.index.query(id_)
+            if goggles_info:
+                return False, goggles_info['name']
+        return True, self.alert_label[0]
 
     def _process(self, result, filter_result):
         hit = False
@@ -92,14 +90,16 @@ class Postprocessor(BasePostprocessor):
             self.index = gv.index_dic.get(self.reserved_args['group_id'])
         if self.group_type is None:
             self.group_type = self.reserved_args['group_type']
+        if self.limit is None:
+            self.limit = self.reserved_args['extra_model'][self.ppe_model_name]
         if self.similarity is None:
             self.similarity = max(self.reserved_args['similarity'] - 0.3, 0)
-        if self.limit is None:
-            self.limit = self.reserved_args['extra_model'][self.workclothes_model_name]
         if self.timeout is None:
             self.timeout = (self.frame_interval / 1000) * 2
             LOGGER.info('source_id={}, alg_name={}, timeout={}'.format(self.source_id, self.alg_name, self.timeout))
         polygons = self._gen_polygons()
+        if self.threshold is None:
+            self.threshold = self.reserved_args['threshold'] * 100
         if not self.reserved_data:
             count = self.__reinfer(filter_result)
             if not count:
@@ -110,9 +110,9 @@ class Postprocessor(BasePostprocessor):
             return False
         self.__check_expire()
         model_name, targets = next(iter(filter_result.items()))
-        if model_name != self.workclothes_model_name:
-            LOGGER.error('Get wrong model result, expect {}, but get {}'.format(
-                self.workclothes_model_name, model_name))
+        if model_name != self.ppe_model_name:
+            LOGGER.error(
+                'Get wrong model result, expect {}, but get {}'.format(self.ppe_model_name, model_name))
             return False
         if self.reinfer_result.get(self.time) is None:
             LOGGER.warning('Not found reinfer result, time={}'.format(self.time))
@@ -142,26 +142,26 @@ class Postprocessor(BasePostprocessor):
                         result['data']['bbox']['rectangles'].append(self._gen_rectangle(
                             xyxy, self.non_alert_color, label, None))
         result['hit'] = hit
+        result['data']['bbox']['polygons'].update(polygons)
         result['data']['group'] = {
             'id': self.index.group_id if self.index is not None else None,
             'name': self.index.group_name if self.index is not None else None
         }
-        result['data']['bbox']['polygons'].update(polygons)
-        return True
+        return result
 
     def _filter(self, model_name, model_data):
         targets = []
-        if model_name == self.workclothes_model_name and not self.reserved_data:
+        if model_name == self.ppe_model_name and not self.reserved_data:
             return targets
         model_conf = model_data['model_conf']
         engine_result = model_data['engine_result']
-        if model_name == self.person_model_name:
+        if model_name == self.face_model_name:
             for engine_result_ in engine_result:
                 # 过滤掉置信度低于阈值的目标
                 if not self._filter_by_conf(model_conf, engine_result_['conf']):
                     continue
                 # 过滤掉不在label列表中的目标
-                label = self._filter_by_label(model_conf, engine_result_['label'])
+                label = self._filter_by_label(model_conf, 0)
                 if not label:
                     continue
                 # 坐标缩放
@@ -170,8 +170,10 @@ class Postprocessor(BasePostprocessor):
                 if not self._filter_by_roi(xyxy):
                     continue
                 # 生成矩形框
-                targets.append(self._gen_rectangle(xyxy, self.non_alert_color, label, engine_result_['conf']))
-        elif model_name == self.workclothes_model_name:
+                targets.append(self._gen_rectangle(
+                    xyxy, self.non_alert_color, label, engine_result_['conf'],
+                    quality=engine_result_['quality']))
+        elif model_name == self.ppe_model_name:
             targets.append({
                 'feature': engine_result
             })

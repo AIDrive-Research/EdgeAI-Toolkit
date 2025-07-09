@@ -6,8 +6,8 @@ from .utils.cv_utils.geo_utils import is_point_in_rectangle
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.mask_model_name = 'mask'
-        self.person_model_name = 'person'
+        self.mask_model_name = 'zql_mask'
+        self.person_model_name = 'zql_person'
 
     def _process(self, result, filter_result):
         hit = False

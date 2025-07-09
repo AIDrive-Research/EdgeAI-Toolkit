@@ -2,18 +2,18 @@ import numpy as np
 
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
-from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
 from .utils.cv_utils.geo_utils import is_point_in_polygon
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'person'
-        self.handheld_item_model_name = 'hrnet'
+        self.person_model_name = 'zql_person'
+        self.handheld_item_model_name = 'zql_hrnet'
         self.limit = None
         self.timeout = None
         self.reinfer_result = {}
@@ -24,7 +24,7 @@ class Postprocessor(BasePostprocessor):
             LOGGER.error('Person model result is None!')
             return False
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         count = 0
         for i in range(self.limit):
             if i >= len(person_rectangles):
@@ -35,7 +35,7 @@ class Postprocessor(BasePostprocessor):
             source_data = {
                 'source_id': self.source_id,
                 'time': self.time * 1000000,
-                'infer_image': opencv_to_base64(cropped_image),
+                'infer_image': mat_to_bytes(cropped_image),
                 'draw_image': None,
                 'reserved_data': {
                     'xyxy': xyxy,
@@ -44,7 +44,7 @@ class Postprocessor(BasePostprocessor):
                     'unsort': True
                 }
             }
-            self.rq_source.put(json_utils.dumps(source_data))
+            self.rq_source.put(msgpack_utils.dump(source_data))
             count += 1
         if count > 0:
             self.reinfer_result[self.time] = {

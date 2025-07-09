@@ -142,7 +142,6 @@ class Postprocessor:
                 for model_name, model_data in args['model'].items():
                     filter_result[model_name] = self._filter(model_name, model_data)
                 status = self._process(result, filter_result)
-                LOGGER.info('status:{}', status)
         except:
             LOGGER.exception('postprocess')
             LOGGER.error('Postprocess failed, source_id={}, alg_name={}'.format(self.source_id, self.alg_name))

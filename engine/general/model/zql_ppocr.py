@@ -15,7 +15,8 @@ class Model(RknnModel):
         # detection
         'max_num': 5,
         'img_size': 640,
-        'conf_thres': 0.5
+        'conf_thres': 0.5,
+        'rec_input_shape': [3, 48, 320]
     }
 
     def __init__(self, acc_id, name, conf):
@@ -36,6 +37,7 @@ class Model(RknnModel):
             self.max_num = args.get('max_num', self.default_args['max_num'])
             self.img_size = args.get('img_size', self.default_args['img_size'])
             self.conf_thres = args.get('conf_thres', self.default_args['conf_thres'])
+            self.rec_input_shape = args.get('rec_input_shape', self.default_args['rec_input_shape'])
         except:
             LOGGER.exception('_load_args')
             return False
@@ -162,9 +164,10 @@ class Model(RknnModel):
         _boxes = list(sorted_boxes)
         return _boxes, scores
 
-    def resize_norm_img(self, img, max_wh_ratio):
-        x = 320
-        imgC, imgH, imgW = [int(v) for v in "3,48,320".split(",")]
+    def resize_norm_img(self, img):
+        imgC, imgH, imgW = self.rec_input_shape
+        x = imgW
+        max_wh_ratio = imgW / imgH
         assert imgC == img.shape[2]
         imgW = int((32 * max_wh_ratio))
         h, w = img.shape[:2]
@@ -172,7 +175,9 @@ class Model(RknnModel):
         resized_w = x
         if math.ceil(imgH * ratio) > imgW:
             resized_w = x
-        resized_image = cv2.resize(img, (x, imgH))
+        else:
+            resized_w = int(math.ceil(imgH * ratio))
+        resized_image = cv2.resize(img, (resized_w, imgH))
         resized_image = resized_image.astype('float32')
         resized_image = resized_image.transpose((2, 0, 1))
         padding_im = np.zeros((imgC, imgH, x), dtype=np.float32)
@@ -217,8 +222,7 @@ class Model(RknnModel):
         return dst_img
 
     def get_img_res(self, image, process_op):
-        h, w = image.shape[:2]
-        image = self.resize_norm_img(image, w * 1.0 / h)
+        image = self.resize_norm_img(image)
         image = image[np.newaxis, :]
         image = np.transpose(image, (0, 2, 3, 1))
         outputs = self._rknn_infer('pprec', [image])
@@ -253,6 +257,7 @@ class Model(RknnModel):
         if self.status:
             try:
                 image = image[..., ::-1]
+                # cv2.imwrite("ocr2.png", image)
                 dt_boxes, dt_confs = self.__infer_det(image)
                 if dt_boxes:
                     for bbox, det_conf in zip(dt_boxes, dt_confs):

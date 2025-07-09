@@ -4,16 +4,17 @@ import gv
 from logger import LOGGER
 from postprocessor import Postprocessor as BasePostprocessor
 from .utils import json_utils
+from .utils import msgpack_utils
 from .utils.cv_utils.color_utils import rgb_reverse
 from .utils.cv_utils.crop_utils import crop_rectangle
-from .utils.image_utils import base64_to_opencv, opencv_to_base64
+from .utils.image_utils.turbojpegutils import bytes_to_mat, mat_to_bytes
 
 
 class Postprocessor(BasePostprocessor):
     def __init__(self, source_id, alg_name):
         super().__init__(source_id, alg_name)
-        self.person_model_name = 'pose'
-        self.gloves_model_name = 'ppe'
+        self.person_model_name = 'zql_pose'
+        self.gloves_model_name = 'zql_ppe'
         self.index = None
         self.group_type = None
         self.similarity = None
@@ -108,7 +109,7 @@ class Postprocessor(BasePostprocessor):
             return False
         person_results = []
         person_rectangles = sorted(person_rectangles, key=lambda x: x['conf'], reverse=True)
-        draw_image = base64_to_opencv(self.draw_image)
+        draw_image = bytes_to_mat(self.draw_image)
         count = 0
         count_glove = 0
         for i in range(len(person_rectangles)):
@@ -126,7 +127,7 @@ class Postprocessor(BasePostprocessor):
                 source_data = {
                     'source_id': self.source_id,
                     'time': self.time * 1000000,
-                    'infer_image': opencv_to_base64(glove_image),
+                    'infer_image': mat_to_bytes(glove_image),
                     'draw_image': None,
                     'reserved_data': {
                         'specified_model': [self.gloves_model_name],
@@ -134,7 +135,7 @@ class Postprocessor(BasePostprocessor):
                         'unsort': True
                     }
                 }
-                self.rq_source.put(json_utils.dumps(source_data))
+                self.rq_source.put(msgpack_utils.dump(source_data))
                 count_glove += 1
             count += 1
         if count_glove > 0:
@@ -207,7 +208,10 @@ class Postprocessor(BasePostprocessor):
             return False
         reinfer_result_ = self.reinfer_result.pop(self.time)
         self.draw_image = reinfer_result_['draw_image']
+        alert_person = {}
+        noalert_person = {}
         for targets, xyxy in reinfer_result_['result']:
+            xyxy_str = json_utils.dumps(xyxy)
             for target in targets:
                 feature = target.pop('feature', None)
                 if feature is not None:
@@ -220,12 +224,18 @@ class Postprocessor(BasePostprocessor):
                         LOGGER.error('Unknown group_type: {}'.format(self.group_type))
                         continue
                     if hit_:
-                        hit = hit_
-                        result['data']['bbox']['rectangles'].append(self._gen_rectangle(
-                            xyxy, self.alert_color, label, None))
+                        alert_person[xyxy_str] = label
                     else:
-                        result['data']['bbox']['rectangles'].append(self._gen_rectangle(
-                            xyxy, self.non_alert_color, label, None))
+                        noalert_person[xyxy_str] = label
+        for xyxy_str, label in noalert_person.items():
+            xyxy = json_utils.loads(xyxy_str)
+            result['data']['bbox']['rectangles'].append(self._gen_rectangle(xyxy, self.non_alert_color, label, None))
+        for xyxy_str, label in alert_person.items():
+            if xyxy_str in noalert_person.keys():
+                continue
+            hit = True
+            xyxy = json_utils.loads(xyxy_str)
+            result['data']['bbox']['rectangles'].append(self._gen_rectangle(xyxy, self.alert_color, label, None))
         result['hit'] = hit
         result['data']['bbox']['rectangles'].extend(reinfer_result_['person_results'])
         result['data']['bbox']['polygons'].update(polygons)
